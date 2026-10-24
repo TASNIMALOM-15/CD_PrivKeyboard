@@ -3,33 +3,38 @@ name: Build APK
 on:
   push:
     branches: [ main, master ]
-  pull_request:
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: '17'
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - name: Setup Android SDK
+        shell: bash
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls -la $ANDROID_HOME || true
+          echo "PATH=$PATH"
+
+          # Install required Android SDK packages
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+      - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "8.9"
+          gradle-version: '8.9'
 
       - name: Build debug APK
-        run: gradle assembleDebug --stacktrace
+        run: gradle assembleDebug --no-daemon --stacktrace
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: PrivKeyboard-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
-          if-no-files-found: error
+          name: TeraPlay-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
