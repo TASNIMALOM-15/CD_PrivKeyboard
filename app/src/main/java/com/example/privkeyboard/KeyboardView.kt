@@ -172,7 +172,7 @@ class KeyboardView(context: Context) : View(context) {
 
     fun reset() {
         stopRepeat()
-        cancelLongPress()
+        cancelLongPressState()
         popupActive = false
         popupPointer = -1
         touches.clear()
@@ -535,7 +535,7 @@ class KeyboardView(context: Context) : View(context) {
                 val i = e.actionIndex
                 val id = e.getPointerId(i)
                 val k = keyAt(e.getX(i), e.getY(i))
-                if (!popupActive) cancelLongPress()
+                if (!popupActive) cancelLongPressState()
                 touches.put(id, k)
                 addTrailPoint(id, e.getX(i), e.getY(i), true)
                 pressKey(id, k, e.getX(i), e.getY(i))
@@ -552,7 +552,7 @@ class KeyboardView(context: Context) : View(context) {
                     val k = keyAt(e.getX(i), e.getY(i))
                     if (k !== old) {
                         if (old.type == KeyType.DELETE) stopRepeat()
-                        if (id == lpPointer) cancelLongPress()
+                        if (id == lpPointer) cancelLongPressState()
                         touches.put(id, k)
                         pressKey(id, k, e.getX(i), e.getY(i))
                     }
@@ -560,7 +560,7 @@ class KeyboardView(context: Context) : View(context) {
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
                 val id = e.getPointerId(e.actionIndex)
-                if (id == lpPointer) cancelLongPress()
+                if (id == lpPointer) cancelLongPressState()
                 if (popupActive && id == popupPointer) {
                     finishPopup()
                 } else {
@@ -665,7 +665,7 @@ class KeyboardView(context: Context) : View(context) {
         if (text != null) commitChar(text)
     }
 
-    private fun cancelLongPress() {
+    private fun cancelLongPressState() {
         uiHandler.removeCallbacks(longPressRunnable)
         lpKey = null
         lpPointer = -1
