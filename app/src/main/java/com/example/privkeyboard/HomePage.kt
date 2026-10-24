@@ -65,13 +65,13 @@ class HomePage(private val activity: Activity) : ScrollView(activity) {
         tips.addView(
             Glass.text(
                 activity,
-                "\u2022 Globe key: English \u2194 \u09AC\u09BE\u0982\u09B2\u09BE (phonetic: ami \u2192 \u0986\u09AE\u09BF)\n" +
-                    "\u2022 Long-press keys for digits, accents and symbols\n" +
-                    "\u2022 Long-press space to switch keyboards\n" +
-                    "\u2022 Clipboard icon above the keys opens your history\n" +
-                    "\u2022 Theme tab: collection, photo backgrounds, blur, glass strength, key height\n" +
-                    "\u2022 Effects tab: key animations, swipe trail, sound packs, haptics\n" +
-                    "\u2022 No keystrokes are logged or sent anywhere; this build has no internet permission.",
+                "• Globe key: English ↔ বাংলা (phonetic: ami → আমি)\n" +
+                    "• Long-press keys for digits, accents and symbols\n" +
+                    "• Long-press space to switch keyboards\n" +
+                    "• Clipboard icon above the keys opens your history\n" +
+                    "• Theme tab: collection, photo backgrounds, blur, glass strength, key height\n" +
+                    "• Effects tab: key animations, swipe trail, sound packs, haptics\n" +
+                    "• No keystrokes are logged or sent anywhere; this build has no internet permission.",
                 13f, ThemeRole.MUTED
             ),
             Glass.lp(activity, t = 6)
@@ -84,28 +84,30 @@ class HomePage(private val activity: Activity) : ScrollView(activity) {
     fun onShow() {
         val green = Color.parseColor("#4CD964")
         val red = Color.parseColor("#FF6B6B")
-        if (isEnabled()) {
-            enableStatus.text = "\u2713 Enabled"
+
+        if (keyboardEnabled()) {
+            enableStatus.text = "✓ Enabled"
             enableStatus.setTextColor(green)
         } else {
-            enableStatus.text = "\u2717 Not enabled yet"
+            enableStatus.text = "✗ Not enabled yet"
             enableStatus.setTextColor(red)
         }
-        if (isSelected()) {
-            selectStatus.text = "\u2713 Currently active"
+
+        if (keyboardSelected()) {
+            selectStatus.text = "✓ Currently active"
             selectStatus.setTextColor(green)
         } else {
-            selectStatus.text = "\u2717 Not active yet"
+            selectStatus.text = "✗ Not active yet"
             selectStatus.setTextColor(red)
         }
     }
 
-    private fun isEnabled(): Boolean {
+    private fun keyboardEnabled(): Boolean {
         val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         return imm.enabledInputMethodList.any { it.packageName == activity.packageName }
     }
 
-    private fun isSelected(): Boolean {
+    private fun keyboardSelected(): Boolean {
         val id = Settings.Secure.getString(activity.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
             ?: return false
         return id.startsWith(activity.packageName + "/")
